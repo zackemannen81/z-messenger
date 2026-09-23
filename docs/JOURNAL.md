@@ -14,3 +14,8 @@ Newest first. Append only.
 ## Bootstrap
 
 - Created by A008 project bootstrap.
+
+## 2026-09-23 — ZM-0002 started
+
+- Agent 008 claimed and published the end-to-end messenger implementation task.
+- Activated the charter for the complete polished z-messenger application.
