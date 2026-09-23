@@ -2,6 +2,12 @@
 
 Newest first. Append only.
 
+## 2026-09-24 — ZM-0004 complete
+
+- Replaced the icon-only message composer with a persistent labelled input and explicit Send button.
+- Strengthened desktop and mobile composer sizing to keep it visible at the bottom of the conversation.
+- Verified `npm run lint`, `npm test` (3/3 passing), and `git diff --check`.
+
 ## 2026-09-23 — ZM-0002 complete
 
 - Delivered the locally runnable z-messenger Node.js WebSocket service and polished responsive browser client.

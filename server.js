@@ -1,4 +1,4 @@
-﻿import { createServer } from 'node:http';
+import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,7 +10,16 @@ const usernamePattern = /^[\p{L}\p{N}][\p{L}\p{N} _.-]{1,23}$/u;
 const mimeTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml' };
 
 function frame(type, payload) { return { type, payload, timestamp: Date.now() }; }
+const maxAttachmentBytes = 1024 * 1024;
+const attachmentNamePattern = /^[^\\/:*?"<>|\u0000-\u001f]{1,120}$/;
 function validText(value) { return typeof value === 'string' && value.trim().length > 0 && value.trim().length <= 2000; }
+function validAttachment(value) {
+  if (value === undefined) return null;
+  if (!value || typeof value !== 'object' || typeof value.name !== 'string' || !attachmentNamePattern.test(value.name.trim()) || typeof value.type !== 'string' || !/^[a-z]+\/[a-z0-9.+-]+$/i.test(value.type) || typeof value.data !== 'string' || !/^[A-Za-z0-9+/]*={0,2}$/.test(value.data)) return false;
+  const data = value.data.replace(/=+$/, '');
+  if (data.length === 0 || Math.floor(data.length * 3 / 4) > maxAttachmentBytes) return false;
+  return { name: value.name.trim(), type: value.type.toLowerCase(), data: value.data };
+}
 
 export function createMessengerServer() {
   const sessions = new Map();
@@ -27,7 +36,7 @@ export function createMessengerServer() {
     try { const content = await readFile(filename); res.writeHead(200, { 'Content-Type': mimeTypes[extname(filename)] || 'application/octet-stream', 'Cache-Control': 'no-cache' }); res.end(content); }
     catch { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Not found'); }
   });
-  const wss = new WebSocketServer({ server: httpServer });
+  const wss = new WebSocketServer({ server: httpServer, maxPayload: Math.ceil(maxAttachmentBytes * 1.5) });
   wss.on('connection', (ws) => {
     ws.on('message', (raw) => {
       let data;
@@ -48,9 +57,12 @@ export function createMessengerServer() {
       if (!user) return error(ws, 'Join before sending messages.');
       if (data.type === 'CHAT_MESSAGE') {
         const text = typeof data.payload.text === 'string' ? data.payload.text.trim() : '';
+        const attachment = validAttachment(data.payload.attachment);
         const recipient = typeof data.payload.recipient === 'string' ? data.payload.recipient : 'ALL';
-        if (!validText(text)) return error(ws, 'Messages must contain 1–2,000 characters.');
-        const message = frame('CHAT_MESSAGE', { sender: user, recipient, text });
+        if (attachment === false) return error(ws, 'Attachments must be valid files no larger than 1 MiB.');
+        if (!validText(text) && !attachment) return error(ws, 'Messages must contain text or an attachment.');
+        if (text && !validText(text)) return error(ws, 'Messages can contain up to 2,000 characters.');
+        const message = frame('CHAT_MESSAGE', { sender: user, recipient, text, ...(attachment ? { attachment } : {}) });
         if (recipient === 'ALL') return broadcast(message);
         const target = [...sessions].find(([, name]) => name === recipient);
         if (!target) return error(ws, `${recipient} is no longer online.`);
