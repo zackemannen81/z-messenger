@@ -10,3 +10,4 @@ Floor: ZM-0001
 | ZM-0004 | Restore accessible message composer | Agent 008 | 2026-09-24 | Client composer usability fix |
 | ZM-0005 | Repair conversation layout and signed-in navigation | Agent 008 | 2026-09-24 | Composer visibility and post-login chat layout |
 | ZM-0006 | Add message file attachments | Agent 008 | 2026-09-24 | Validated local attachment sharing |
+| ZM-0007 | Repair repeat attachment sending | Agent 008 | 2026-09-24 | Reliable sequential file message delivery |

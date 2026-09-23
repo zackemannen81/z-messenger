@@ -1,6 +1,6 @@
 # Current Task
 
-# ZM-0006 — Add Message File Attachments
+# ZM-0007 — Repair Repeat Attachment Sending
 
 Status: Complete
 Owner: Agent 008
@@ -8,12 +8,10 @@ Created: 2026-09-24
 
 ## Goal
 
-Allow users to attach a small file to a group or private message.
+Allow a user to send another attachment after successfully sending one.
 
 ## Done when
 
-- The composer provides an accessible file chooser and shows the selected filename.
-- A message can contain text, one attachment, or both.
-- The server validates attachment metadata, safe filename, type, and a 1 MiB payload limit before forwarding it only to the appropriate recipients.
-- Recipients can preview supported images and download every attachment.
+- The attachment chooser can select and send sequential files reliably.
+- Client-side binary conversion avoids argument-size failures.
 - Lint and protocol tests pass.

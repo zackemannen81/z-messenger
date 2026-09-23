@@ -2,6 +2,12 @@
 
 Newest first. Append only.
 
+## 2026-09-24 — ZM-0007 complete
+
+- Replaced fragile whole-file binary conversion with chunked Base64 encoding for repeat attachment sends.
+- Prevented duplicate send submissions while an attachment is being prepared.
+- Extended protocol coverage to deliver two sequential attachments; verified `npm run lint`, `npm test` (4/4), and `git diff --check`.
+
 ## 2026-09-24 — ZM-0004 complete
 
 - Replaced the icon-only message composer with a persistent labelled input and explicit Send button.
