@@ -1,0 +1,15 @@
+﻿{
+  "name": "z-messenger",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A polished ephemeral WebSocket messenger.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "lint": "node --check server.js && node --check public/app.js && node --check test/server.test.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": { "ws": "^8.18.3" }
+}

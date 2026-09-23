@@ -1,24 +1,25 @@
-# System Document
+﻿# System Document
 
 ## Current Reality
 
-No application code has been implemented. The repository currently contains only the docs-first control plane and the source development plan.
+z-messenger is a Node.js 20+ application launched by `npm start`. `server.js` serves the browser client from `public/` and attaches a `ws` WebSocket server to the same HTTP port (8080 by default, overridable with `PORT`). It retains only an in-memory map of live WebSocket sessions to usernames; chats are ephemeral.
 
-## Planned System
+## Protocol
 
-The intended system is a browser client connected to a WebSocket server over `ws://` during local development, with `wss://` supported for secure deployment. The server owns transient sessions, username uniqueness, presence, and message routing; it does not persist chat history.
+Every outgoing server frame includes `type`, `payload`, and `timestamp`. Client frames must be JSON objects with a type and object payload.
 
-### Protocol
+- `JOIN` accepts a unique, case-insensitive username of 2–24 permitted characters, then emits `JOIN_ACK`, `USER_LIST`, and `USER_JOINED` to others.
+- `CHAT_MESSAGE` accepts a 1–2,000-character message. `recipient: "ALL"` broadcasts it; a named recipient receives a private message and the sender receives the echo.
+- `NUDGE` broadcasts a notification to current sessions.
+- `USER_LEFT` follows a disconnected joined session.
+- Invalid JSON, invalid frames, invalid or duplicate names, unauthenticated actions, invalid messages, unavailable recipients, and unknown actions receive `ERROR` without ending the server.
 
-Protocol frames are JSON objects with `type`, `payload`, and (where applicable) a timestamp. The planned operations are:
+The server derives sender identity and timestamps and never trusts either from a client.
 
-- `JOIN` / `JOIN_ACK` / `ERROR` for registration and validation;
-- `USER_LIST`, `USER_JOINED`, and `USER_LEFT` for presence;
-- `CHAT_MESSAGE` for broadcast and private delivery; and
-- `NUDGE` for a broadcast action notification.
+## Client Experience
 
-The server derives the sender from the registered session rather than trusting a client-supplied sender value.
+The accessible responsive client has a sign-in view, availability/contact sidebar, conversation targeting, message composer, live system events, non-blocking error toast, sign-out action, and nudge animation. It uses semantic buttons, labels, keyboard form submission, and text-content rendering for remote message text.
 
-### Client Experience
+## Verification
 
-The client will provide a username entry screen, live contact list, broadcast and direct-message selection, conversation view, send input, and nudge feedback. The design target is a polished native Apple-app feel, not the reference page's basic styling.
+`npm run lint` runs syntax checks. `npm test` runs WebSocket integration coverage for group/presence/disconnect behavior, private-message isolation, and protocol error paths. Manual local verification is performed by opening multiple windows at `http://localhost:8080`.

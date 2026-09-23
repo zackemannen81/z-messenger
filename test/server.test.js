@@ -1,0 +1,15 @@
+﻿import test, { afterEach } from 'node:test';
+import assert from 'node:assert/strict';
+import WebSocket from 'ws';
+import { createMessengerServer } from '../server.js';
+
+let app;
+afterEach(async () => { if (app) { await app.close(); app = undefined; } });
+async function boot() { app = createMessengerServer(); await app.listen(0); return `ws://127.0.0.1:${app.httpServer.address().port}`; }
+function client(url) { const ws = new WebSocket(url); const messages = []; ws.on('message', (value) => messages.push(JSON.parse(value))); return new Promise((resolve) => ws.on('open', () => resolve({ ws, messages }))); }
+async function next(peer, type) { for (let count = 0; count < 40; count++) { const index = peer.messages.findIndex((message) => message.type === type); if (index >= 0) return peer.messages.splice(index, 1)[0]; await new Promise((resolve) => setTimeout(resolve, 10)); } assert.fail(`Expected ${type}`); }
+function send(peer, type, payload) { peer.ws.send(JSON.stringify({ type, payload })); }
+
+test('joins clients and broadcasts presence and messages', async () => { const url = await boot(); const alice = await client(url); send(alice, 'JOIN', { username: 'Alice' }); assert.equal((await next(alice, 'JOIN_ACK')).payload.username, 'Alice'); const bob = await client(url); send(bob, 'JOIN', { username: 'Bob' }); assert.equal((await next(bob, 'USER_LIST')).payload.users.join(','), 'Alice,Bob'); assert.equal((await next(alice, 'USER_JOINED')).payload.username, 'Bob'); send(alice, 'CHAT_MESSAGE', { recipient: 'ALL', text: 'Hello' }); assert.equal((await next(bob, 'CHAT_MESSAGE')).payload.text, 'Hello'); alice.ws.close(); assert.equal((await next(bob, 'USER_LEFT')).payload.username, 'Alice'); bob.ws.close(); });
+test('delivers direct messages only to participants', async () => { const url = await boot(); const a = await client(url), b = await client(url), c = await client(url); for (const [peer, name] of [[a, 'Alice'], [b, 'Bob'], [c, 'Cara']]) send(peer, 'JOIN', { username: name }); await next(c, 'USER_LIST'); send(a, 'CHAT_MESSAGE', { recipient: 'Bob', text: 'Secret' }); assert.equal((await next(b, 'CHAT_MESSAGE')).payload.recipient, 'Bob'); await new Promise((resolve) => setTimeout(resolve, 50)); assert.equal(c.messages.some((message) => message.type === 'CHAT_MESSAGE'), false); [a,b,c].forEach((peer) => peer.ws.close()); });
+test('returns errors for malformed, duplicate, unauthenticated, and invalid requests', async () => { const url = await boot(); const a = await client(url); a.ws.send('{bad'); assert.match((await next(a, 'ERROR')).payload.message, /Invalid JSON/); const b = await client(url); send(b, 'CHAT_MESSAGE', { text: 'nope' }); assert.match((await next(b, 'ERROR')).payload.message, /Join before/); send(a, 'JOIN', { username: 'Alice' }); await next(a, 'JOIN_ACK'); send(b, 'JOIN', { username: 'alice' }); assert.match((await next(b, 'ERROR')).payload.message, /already online/); send(a, 'CHAT_MESSAGE', { recipient: 'Nobody', text: 'Hi' }); assert.match((await next(a, 'ERROR')).payload.message, /no longer online/); a.ws.close(); b.ws.close(); });

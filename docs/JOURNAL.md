@@ -1,6 +1,13 @@
-# Journal
+﻿# Journal
 
 Newest first. Append only.
+
+## 2026-09-23 — ZM-0002 complete
+
+- Delivered the locally runnable z-messenger Node.js WebSocket service and polished responsive browser client.
+- Implemented unique joins, live presence, broadcast and private routing, nudges, disconnect propagation, protocol validation, and safe server errors.
+- Added reproducible package scripts, protocol integration tests, and run documentation.
+- Verified `npm run lint`, `npm test` (3/3 passing), and live HTTP asset serving at `http://localhost:8080`.
 
 ## 2026-09-23 — ZM-0003 complete
 

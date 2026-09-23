@@ -1,10 +1,5 @@
-# Current Task
+﻿# Current Task
 
-## ZM-0002 — Initial Messenger Implementation
+No active task.
 
-Status: In Progress
-Owner: Agent 008
-Started: 2026-09-23
-Charter: `docs/backlog/ZM-0002-initial-messenger-implementation.md`
-
-Complete the polished, locally runnable z-messenger application and satisfy every Definition of Done and verification gate in the charter.
+Claim the next task identity in `docs/TASK_IDS.md` and publish it before beginning work.
