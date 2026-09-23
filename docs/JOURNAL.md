@@ -2,6 +2,10 @@
 
 Newest first. Append only.
 
+## 2026-09-23 — ZM-0003 complete
+
+- Added `.env.local` to the root `.gitignore`.
+
 ## 2026-09-23 — ZM-0001 complete
 
 - Established the docs-first baseline from the messenger development plan.
