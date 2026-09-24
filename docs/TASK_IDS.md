@@ -12,3 +12,4 @@ Floor: ZM-0001
 | ZM-0006 | Add message file attachments | Agent 008 | 2026-09-24 | Validated local attachment sharing |
 | ZM-0007 | Repair repeat attachment sending | Agent 008 | 2026-09-24 | Reliable sequential file message delivery |
 | ZM-0008 | Increase attachment size limit | Agent 008 | 2026-09-24 | Support uploads up to 6 MiB |
+| ZM-0009 | Install Tauri v2 client dependencies | Agent 008 | 2026-09-24 | Prepare the Tauri client to run locally |
