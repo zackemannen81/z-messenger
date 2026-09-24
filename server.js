@@ -10,7 +10,7 @@ const usernamePattern = /^[\p{L}\p{N}][\p{L}\p{N} _.-]{1,23}$/u;
 const mimeTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml' };
 
 function frame(type, payload) { return { type, payload, timestamp: Date.now() }; }
-const maxAttachmentBytes = 1024 * 1024;
+const maxAttachmentBytes = 6 * 1024 * 1024;
 const attachmentNamePattern = /^[^\\/:*?"<>|\u0000-\u001f]{1,120}$/;
 function validText(value) { return typeof value === 'string' && value.trim().length > 0 && value.trim().length <= 2000; }
 function validAttachment(value) {
@@ -59,7 +59,7 @@ export function createMessengerServer() {
         const text = typeof data.payload.text === 'string' ? data.payload.text.trim() : '';
         const attachment = validAttachment(data.payload.attachment);
         const recipient = typeof data.payload.recipient === 'string' ? data.payload.recipient : 'ALL';
-        if (attachment === false) return error(ws, 'Attachments must be valid files no larger than 1 MiB.');
+        if (attachment === false) return error(ws, 'Attachments must be valid files no larger than 6 MiB.');
         if (!validText(text) && !attachment) return error(ws, 'Messages must contain text or an attachment.');
         if (text && !validText(text)) return error(ws, 'Messages can contain up to 2,000 characters.');
         const message = frame('CHAT_MESSAGE', { sender: user, recipient, text, ...(attachment ? { attachment } : {}) });

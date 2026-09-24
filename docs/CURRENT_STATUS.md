@@ -7,7 +7,7 @@ Reality as of 2026-09-24.
 - A locally runnable Node.js WebSocket messenger with static browser hosting.
 - A responsive Apple-inspired client with unique-name sign-in, live contact presence, broadcast/private messages, nudges, error feedback, and responsive layouts.
 - A persistent, labelled, keyboard-operable message composer with an explicit Send button across desktop and mobile layouts.
-- Ephemeral group and private file attachments (up to 1 MiB), with image previews and download links.
+- Ephemeral group and private file attachments (up to 6 MiB), with image previews and download links.
 - Protocol integration tests and JavaScript syntax validation, both passing.
 
 ## Active Work

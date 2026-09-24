@@ -1,6 +1,6 @@
 # Current Task
 
-# ZM-0007 — Repair Repeat Attachment Sending
+# ZM-0008 — Increase Attachment Size Limit
 
 Status: Complete
 Owner: Agent 008
@@ -8,10 +8,10 @@ Created: 2026-09-24
 
 ## Goal
 
-Allow a user to send another attachment after successfully sending one.
+Allow message attachments up to 6 MiB.
 
 ## Done when
 
-- The attachment chooser can select and send sequential files reliably.
-- Client-side binary conversion avoids argument-size failures.
+- Client and server both enforce a 6 MiB attachment limit.
+- User-facing validation states the updated limit.
 - Lint and protocol tests pass.
